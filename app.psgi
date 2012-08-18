@@ -44,7 +44,7 @@ post '/user_geo' => sub {
     my $id = $model->insert_geo(int($user_id), $lat, $lon);
 
     # user_id is not mine, lat or lon within 1km;
-    my $users = $model->find_users(int($user_id), $lat, $lon);
+    my $users = $model->find_geo_users(int($user_id), $lat, $lon);
 
     my $users_id;
     while (my $user = $users->next) {

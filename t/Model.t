@@ -20,8 +20,9 @@ sub find : Test(1) {
                            username => $config->{DB_USERNAME},
                            password => $config->{DB_PASSWORD},
                            db_name => $config->{DB_NAME});
-    my @users = $model->find_users(123, 35.6131, 139.6637765)->all;
-    ok $#users, 3;
+    my $id = $model->insert_geo(123, 35.6131, 139.6637765);
+    my $user = $model->find_one_history($id);
+    is ($user->{_id}, $id);
 }
 
 __PACKAGE__->runtests;
