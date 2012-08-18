@@ -9,8 +9,8 @@ use Data::Dumper;
 my $file_config = 'config.yaml';
 my $config = YAML::XS::LoadFile($file_config);
 
-# 0.00027778 => 31m
-my $ANGLE       = 0.00027778;
+# 0.01 => 1km
+my $RANGE       = 0.01;
 
 sub new {
     my ($class, %args) = @_;
@@ -46,10 +46,10 @@ sub history_find_users {
     my ($user_id, $lat, $lon) = @_;
     my $collection = $self->{database}->history;
     my $users = $collection->find({'$and' => [{user_id => {'$ne' => int($user_id)}},
-                                              {'$or' => [{lat => {'$gte' => $lat - $ANGLE * 35,
-                                                                  '$lte' => $lat + $ANGLE * 35}},
-                                                         {lon => {'$gte' => $lon - $ANGLE * 35,
-                                                                  '$lte' => $lon + $ANGLE * 35}}]}]});
+                                              {'$or' => [{lat => {'$gte' => $lat - $RANGE,
+                                                                  '$lte' => $lat + $RANGE}},
+                                                         {lon => {'$gte' => $lon - $RANGE,
+                                                                  '$lte' => $lon + $RANGE}}]}]});
     return $users;
 }
 
