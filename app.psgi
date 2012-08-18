@@ -41,10 +41,10 @@ post '/user_geo' => sub {
                            password => $config->{DB_PASSWORD},
                            db_name => $config->{DB_NAME});
 
-    my $id = $model->insert_geo(int($user_id), $lat, $lon);
+    my $id = $model->history_insert(int($user_id), $lat, $lon);
 
     # user_id is not mine, lat or lon within 1km;
-    my $users = $model->find_geo_users(int($user_id), $lat, $lon);
+    my $users = $model->history_find_users(int($user_id), $lat, $lon);
 
     my $users_id;
     while (my $user = $users->next) {

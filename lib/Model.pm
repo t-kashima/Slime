@@ -31,14 +31,14 @@ sub setup_database {
     return $connection->slime_geo_user;
 }
 
-sub insert_geo {
+sub history_insert {
     my $self = shift;
     my ($user_id, $lat, $lon) = @_;
     my $collection = $self->{database}->history;
     return $collection->insert({user_id => int($user_id), lat => $lat * 1, lon => $lon * 1});
 }
 
-sub find_geo_users {
+sub history_find_users {
     my $self = shift;
     my ($user_id, $lat, $lon) = @_;
     my $collection = $self->{database}->history;
@@ -50,7 +50,7 @@ sub find_geo_users {
     return $users;
 }
 
-sub find_one_history {
+sub history_find_one {
     my $self = shift;
     my $id = shift;
     my $collection = $self->{database}->history;
