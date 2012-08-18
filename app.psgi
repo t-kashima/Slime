@@ -24,28 +24,6 @@ get '/debug' => sub {
 		      });
 };
 
-get '/login' => sub {
-    my $c = shift;
-    my $id = $c->req->param('id');
-
-    return $c->redirect('/debug?already_logined') if ($c->session->get('id'));     
-    if( $c->session->set('id' => $id) ){
-	return $c->redirect('/debug?loginsuccess');	
-    } else {
-	return $c->redirect('/debug?error');
-    }
-};
-
-get '/logout' => sub {
-    my $c = shift;
-    
-    if( $c->session->remove('id') ){
-	return $c->redirect('/debug?logout_success');	
-    } else {
-	return $c->redirect('/debug?error');
-    }
-};
-
 get '/user' => sub {
     my $c = shift;
     return $c->render('geolocation.tt');
@@ -74,6 +52,19 @@ post '/user_geo' => sub {
     }
 
     return $c->create_response(200, [], ['near user\'s id:' . $users_id]);
+};
+
+get '/login' => sub {
+    my $c = shift;
+    my $id = $c->req->param('id');
+    $c->session->set('id' => $id);
+    return $c->redirect('/debug');
+};
+
+get '/logout' => sub {
+    my $c = shift;
+    $c->session->remove('id');
+    return $c->redirect('/debug');
 };
 
 __PACKAGE__->enable_session();
