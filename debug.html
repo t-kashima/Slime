@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>デバッグ画面</title>
+
+<h1>ログイン</h1>
+<form action='/login' method='get'>
+Twitterアカウント:<input type='text' id='id' name='uid'/>
+<input type='submit' value='ログイン'/>
+</form>
+
+<h1>ステータス</h1>
+<p>jsで /status たたいて取得</p>
+<ul>
+<li>Twitterアカウント: @test_usr
+<li>所属クラス       : -
+<li>クラスメイト一覧 :
+  <ul>
+    <li>@test_usr1
+    <li>@test_usr2
+    <li>@test_usr3
+  </ul>
+</ul>
+
+<h2>ステータスのjson</h2>
+<pre>
+cli -> server /status?id=twitterid&lat=135&lng=35
+{
+'class':'hoge',
+'classmate' : ['foo', 'bar'],
+'new_classmate' :['bar'],
+'del_classmate' :['buzz'],
+'timeline' : {
+asdgoqejrgoajer
+}
+}  
+</pre>
+
+<h1>function get_near_usr()</h1>
+<p>デバッグ用, 本来はステータス取得時にクラスに入ったりする</p>
+<form action='/status' method='get'>
+lat:<input type='text' name='lat' id='lat' value='135'/>
+lng:<input type='text' name='lng' id='lng' value='35'/>
+</form>
+
+<h1>function getout_class()</h1>
+<a href='/getout?id=twitterid'>クラスから抜ける</a>
