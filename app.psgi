@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Amon2::Lite;
 use MongoDB;
+use Data::Dumper;
 
 get '/' => sub {
     my $c = shift;
@@ -41,6 +42,9 @@ post '/user_geo' => sub {
     my $DB_NAME     = 'slime_geo_user';
     my $DB_PORT     = 37087;
 
+    # 0.00027778 => 31m
+    my $ANGLE       = 0.00027778;
+
     my $connection = MongoDB::Connection->new(host => $DB_HOST, port => $DB_PORT,
                                           username => $DB_USERNAME, password => $DB_PASSWORD, db_name => $DB_NAME);
     my $database = $connection->slime_geo_user;
@@ -48,7 +52,15 @@ post '/user_geo' => sub {
 
     my $id = $collection->insert({user_id => $user_id, lat => $lat, lon => $lon});
 
-    return $c->create_response(200, [], ['helllo:' . $id]);
+    my $users = $collection->find({lat => {'$gte' => $lat - $ANGLE * 35, '$lte' => $lat + $ANGLE * 35},
+                                   lon => {'$gte' => $lon - $ANGLE * 35, '$lte' => $lon + $ANGLE * 35}});
+
+    my $users_id;
+    while (my $user = $users->next) {
+        $users_id .= $user->{user_id} . ', ';
+    }
+
+    return $c->create_response(200, [], ['near user\'s id:' . $users_id]);
 };
 
 __PACKAGE__->to_app(handle_static => 1);
