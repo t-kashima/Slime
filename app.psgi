@@ -4,7 +4,15 @@ use strict;
 use warnings;
 use Amon2::Lite;
 use MongoDB;
+use lib './lib';
+use Model;
 use Data::Dumper;
+
+my $DB_HOST     = 'ds037087.mongolab.com';
+my $DB_USERNAME = 'mongo';
+my $DB_PASSWORD = 'mongo0819';
+my $DB_NAME     = 'slime_geo_user';
+my $DB_PORT     = 37087;
 
 get '/' => sub {
     my $c = shift;
@@ -50,29 +58,14 @@ post '/user_geo' => sub {
     my $user_id = $c->req->param('user_id');
     my $lat = $c->req->param('lat');
     my $lon = $c->req->param('lon');
-    my $DB_HOST     = 'ds037087.mongolab.com';
-    my $DB_USERNAME = 'mongo';
-    my $DB_PASSWORD = 'mongo0819';
-    my $DB_NAME     = 'slime_geo_user';
-    my $DB_PORT     = 37087;
 
-    # 0.00027778 => 31m
-    my $ANGLE       = 0.00027778;
+    my $model = Model->new(host => $DB_HOST, port => $DB_PORT,
+                           username => $DB_USERNAME, password => $DB_PASSWORD, db_name => $DB_NAME);
 
-    my $connection = MongoDB::Connection->new(host => $DB_HOST, port => $DB_PORT,
-                                          username => $DB_USERNAME, password => $DB_PASSWORD, db_name => $DB_NAME);
-
-    my $database = $connection->slime_geo_user;
-    my $collection = $database->history;
-
-    my $id = $collection->insert({user_id => int($user_id), lat => $lat * 1, lon => $lon * 1});
+    my $id = $model->insert_geo(int($user_id), $lat, $lon);
 
     # user_id is not mine, lat or lon within 1km;
-    my $users = $collection->find({'$and' => [{user_id => {'$ne' => int($user_id)}},
-                                              {'$or' => [{lat => {'$gte' => $lat - $ANGLE * 35,
-                                                                  '$lte' => $lat + $ANGLE * 35}},
-                                                         {lon => {'$gte' => $lon - $ANGLE * 35,
-                                                                  '$lte' => $lon + $ANGLE * 35}}]}]});
+    my $users = $model->find_users(int($user_id), $lat, $lon);
 
     my $users_id;
     while (my $user = $users->next) {
