@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <title>デバッグ画面</title>
 
-<h1>ログイン</h1>
+<h1>[% IF id %]ログアウト[% ELSE %]ログイン[% END %]</h1>
+[% IF id %]<a href='/logout'>ログアウト</a>
+[% ELSE %]
 <form action='/login' method='get'>
-Twitterアカウント:<input type='text' id='id' name='uid'/>
+Twitterアカウント:<input type='text' id='id' name='id'/>
 <input type='submit' value='ログイン'/>
 </form>
+[% END %]
 
 <h1>ステータス</h1>
 <p>jsで /status たたいて取得</p>
 <ul>
-<li>Twitterアカウント: @test_usr
+<li>Twitterアカウント: @[% id %]
 <li>所属クラス       : -
 <li>クラスメイト一覧 :
   <ul>
