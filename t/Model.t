@@ -20,8 +20,8 @@ sub find : Test(1) {
                            username => $config->{DB_USERNAME},
                            password => $config->{DB_PASSWORD},
                            db_name => $config->{DB_NAME});
-    my $id = $model->insert_geo(123, 35.6131, 139.6637765);
-    my $user = $model->find_one_history($id);
+    my $id = $model->history_insert(123, 35.6131, 139.6637765);
+    my $user = $model->history_find_one($id);
     is ($user->{_id}, $id);
 }
 
