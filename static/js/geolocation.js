@@ -1,10 +1,11 @@
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
         function (pos) {
-            $.post('/user',
+            $.post('/user_geo',
                    {
                        lat: pos.coords.latitude,
-                       lon: pos.coords.longitude
+                       lon: pos.coords.longitude,
+                       user_id: 123
                    },
                    function(res) {
                        alert(res);
