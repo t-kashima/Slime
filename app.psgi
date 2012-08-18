@@ -56,18 +56,12 @@ post '/user_geo' => sub {
     my $DB_NAME     = 'slime_geo_user';
     my $DB_PORT     = 37087;
 
-    my $connection = MongoDB::Connection->new(
-	host => $DB_HOST,
-	port => $DB_PORT,
-	username => $DB_USERNAME,
-	password => $DB_PASSWORD,
-	db_name => $DB_NAME);
     # 0.00027778 => 31m
     my $ANGLE       = 0.00027778;
 
     my $connection = MongoDB::Connection->new(host => $DB_HOST, port => $DB_PORT,
                                           username => $DB_USERNAME, password => $DB_PASSWORD, db_name => $DB_NAME);
-    
+
     my $database = $connection->slime_geo_user;
     my $collection = $database->history;
 
