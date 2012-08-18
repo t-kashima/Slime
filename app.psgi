@@ -13,17 +13,31 @@ get '/' => sub {
 
 get '/debug' => sub {
     my $c = shift;
-    return $c->render('debug.tt');
+    return $c->render('debug.tt' => {
+	id => $c->session->get('id'),
+		      });
 };
 
 get '/login' => sub {
     my $c = shift;
     my $id = $c->req->param('id');
+
+    return $c->redirect('/debug?already_logined') if ($c->session->get('id'));     
+    if( $c->session->set('id' => $id) ){
+	return $c->redirect('/debug?loginsuccess');	
+    } else {
+	return $c->redirect('/debug?error');
+    }
+};
+
+get '/logout' => sub {
+    my $c = shift;
     
-    # if( $c->session->set('id' => $id ) )
-    
-    # unless ($c->session->get('id')); 
-    return $c->redirect('/debug');
+    if( $c->session->remove('id') ){
+	return $c->redirect('/debug?logout_success');	
+    } else {
+	return $c->redirect('/debug?error');
+    }
 };
 
 get '/user' => sub {
@@ -42,11 +56,18 @@ post '/user_geo' => sub {
     my $DB_NAME     = 'slime_geo_user';
     my $DB_PORT     = 37087;
 
+    my $connection = MongoDB::Connection->new(
+	host => $DB_HOST,
+	port => $DB_PORT,
+	username => $DB_USERNAME,
+	password => $DB_PASSWORD,
+	db_name => $DB_NAME);
     # 0.00027778 => 31m
     my $ANGLE       = 0.00027778;
 
     my $connection = MongoDB::Connection->new(host => $DB_HOST, port => $DB_PORT,
                                           username => $DB_USERNAME, password => $DB_PASSWORD, db_name => $DB_NAME);
+    
     my $database = $connection->slime_geo_user;
     my $collection = $database->history;
 
@@ -59,7 +80,6 @@ post '/user_geo' => sub {
                                                          {lon => {'$gte' => $lon - $ANGLE * 35,
                                                                   '$lte' => $lon + $ANGLE * 35}}]}]});
 
-
     my $users_id;
     while (my $user = $users->next) {
         $users_id .= $user->{user_id} . ', ';
@@ -68,6 +88,5 @@ post '/user_geo' => sub {
     return $c->create_response(200, [], ['near user\'s id:' . $users_id]);
 };
 
+__PACKAGE__->enable_session();
 __PACKAGE__->to_app(handle_static => 1);
-
-
