@@ -49,4 +49,74 @@ sub find_users {
     return $users;
 }
 
+
+
+
+
+# ユーザが存在しているときユーザ情報を、していない時、1
+sub check_user_exists {
+    my $self = shift;
+    my $id   = shift;
+
+    if (my $user = $self->test->user->find_one({id => $id})) {
+	return 0;
+    } else {
+	return $user;
+    }
+}
+
+sub select_user_info {
+    my $self  = shift;
+    my $where = shift || '';
+    
+    my $usrs = $self->test->usr->find($where);
+
+    my @ret;
+    while (my $u = $usrs->next) {
+	push @ret, {id => $u->{id}, class => $u->{class}};
+    }
+    
+    return @ret;
+}
+
+
+sub create_user {
+    my $self  = shift;
+    my $id    = shift;
+    my $class = shift || '';
+
+    if ($self->test->user->insert({id => $id, class => $class})) {
+	return 0;
+    } else {
+	return 1;
+    }
+}
+
+
+sub update_user_info {
+    my $self  = shift;
+    my $id    = shift;
+    my $class = shift || '';
+    
+    if ($self->test->usr->update({id => $id}, {id => $id, class=>$class})){
+	return 0;
+    } else {
+	return 1;
+    }
+}
+
+	    
+
+sub drop_class {
+    my $self  = shift;
+    my $id    = shift;
+
+    if ($self->test->usr->update({id => $id}, {id => $id})) {
+	return 0;
+    } else {
+	return 1;
+    }
+}
+
+
 1;
