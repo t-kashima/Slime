@@ -7,10 +7,6 @@ use MongoDB;
 use lib './lib';
 use Model;
 use Data::Dumper;
-use YAML::XS;
-
-my $file_config = 'config.yaml';
-my $config = YAML::XS::LoadFile($file_config);
 
 get '/' => sub {
     my $c = shift;
@@ -35,11 +31,7 @@ post '/user_geo' => sub {
     my $lat = $c->req->param('lat');
     my $lon = $c->req->param('lon');
 
-    my $model = Model->new(host => $config->{DB_HOST},
-                           port => $config->{DB_PORT},
-                           username => $config->{DB_USERNAME},
-                           password => $config->{DB_PASSWORD},
-                           db_name => $config->{DB_NAME});
+    my $model = Model->new;
 
     my $id = $model->history_insert(int($user_id), $lat, $lon);
 
