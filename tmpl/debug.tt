@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <title>デバッグ画面</title>
 
+<h1>ユーザ追加</h1>
+<form action='/add_usr' method='get'>
+Twitterアカウント:<input type='text' id='id' name='id'/>
+
+</form>
+
 <h1>[% IF id %]ログアウト[% ELSE %]ログイン[% END %]</h1>
 [% IF id %]<a href='/logout'>ログアウト</a>
 [% ELSE %]
@@ -10,8 +16,7 @@ Twitterアカウント:<input type='text' id='id' name='id'/>
 </form>
 [% END %]
 
-<h1>ステータス</h1>
-<p>jsで /status たたいて取得</p>
+<h1>アカウント情報</h1>
 <ul>
 <li>Twitterアカウント: @[% id %]
 <li>所属クラス       : -
@@ -22,7 +27,22 @@ Twitterアカウント:<input type='text' id='id' name='id'/>
     <li>@test_usr3
   </ul>
 </ul>
+<a href='/drop'>クラスから抜ける</a>
 
+<h1>登録情報</h1>
+<table>
+<tr><th>id</th><th>class</th><th>-</th></tr>
+[% FOR u IN users%]
+<tr>
+  <th>[% u.id %]</th>
+  <th>[% IF u.class %][% u.class %][% ELSE %]-[%END%]</th>
+  <th><a href="/follow?id=[% u.id %]&class=[% u.class %]">接触する</a></th>
+</tr>
+
+[% END %]
+</table>
+
+<!--
 <h2>ステータスのjson</h2>
 <pre>
 cli -> server /status?id=twitterid&lat=135&lng=35
@@ -47,3 +67,4 @@ lng:<input type='text' name='lng' id='lng' value='35'/>
 
 <h1>function getout_class()</h1>
 <a href='/getout?id=twitterid'>クラスから抜ける</a>
+-->
