@@ -50,10 +50,15 @@ post '/user_geo' => sub {
     my $database = $connection->slime_geo_user;
     my $collection = $database->history;
 
-    my $id = $collection->insert({user_id => $user_id, lat => $lat, lon => $lon});
+    my $id = $collection->insert({user_id => int($user_id), lat => $lat * 1, lon => $lon * 1});
 
-    my $users = $collection->find({lat => {'$gte' => $lat - $ANGLE * 35, '$lte' => $lat + $ANGLE * 35},
-                                   lon => {'$gte' => $lon - $ANGLE * 35, '$lte' => $lon + $ANGLE * 35}});
+    # user_id is not mine, lat or lon within 1km;
+    my $users = $collection->find({'$and' => [{user_id => {'$ne' => int($user_id)}},
+                                              {'$or' => [{lat => {'$gte' => $lat - $ANGLE * 35,
+                                                                  '$lte' => $lat + $ANGLE * 35}},
+                                                         {lon => {'$gte' => $lon - $ANGLE * 35,
+                                                                  '$lte' => $lon + $ANGLE * 35}}]}]});
+
 
     my $users_id;
     while (my $user = $users->next) {
