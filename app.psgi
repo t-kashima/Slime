@@ -16,13 +16,8 @@ get '/' => sub {
 get '/add_usr' => sub {
     my $c     = shift;
     my $id    = $c->req->param('id');
+    my $model = Model->new;
 
-    my $model = Model->new(host => $config->{DB_HOST},
-                           port => $config->{DB_PORT},
-                           username => $config->{DB_USERNAME},
-                           password => $config->{DB_PASSWORD},
-                           db_name => $config->{DB_NAME});    
-    
     if ($model->check_user_exists($id)) {
         return $c->redirect('/debug?exist_user');
     }
@@ -36,13 +31,8 @@ get '/debug' => sub {
     my $c    = shift;
     my $id   = $c->req->param('id');
     my $myid = $c->session->get('id');
+    my $model = Model->new;
 
-    my $model = Model->new(host => $config->{DB_HOST},
-                           port => $config->{DB_PORT},
-                           username => $config->{DB_USERNAME},
-                           password => $config->{DB_PASSWORD},
-                           db_name => $config->{DB_NAME});    
-    
     # 自分の情報取得
     my $my_info = $model->check_user_exists($myid);
     
@@ -69,12 +59,8 @@ get '/follow' => sub {
     my $class = $c->req->param('class');
     my $myid  = $c->session->get('id');
 
-    my $model = Model->new(host => $config->{DB_HOST},
-                           port => $config->{DB_PORT},
-                           username => $config->{DB_USERNAME},
-                           password => $config->{DB_PASSWORD},
-                           db_name => $config->{DB_NAME});
-    
+    my $model = Model->new;
+
     # 自分をフォローしようとしたとき
     return $c->redirect('/debug?are_you_ok?') if $id eq $myid;
     
