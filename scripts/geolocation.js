@@ -1,6 +1,15 @@
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
         function (pos) {
+            $.post('/user',
+                   {
+                       lat: pos.coords.latitude,
+                       lon: pos.coords.longitude
+                   },
+                   function(res) {
+                       alert(res);
+                   }
+            );
             var location = '<li>latitude:' + pos.coords.latitude + '</li>';
             location += '<li>longitude:' + pos.coords.longitude + '</li>';
             var element_location = document.querySelector('#location');
