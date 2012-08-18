@@ -9,6 +9,14 @@ get '/' => sub {
     return $c->create_response(200, [], ['Hello, world']);
 };
 
+post '/user' => sub {
+    my $c = shift;
+    my $data;
+    $data .= $c->req->param('lat');
+    $data .= $c->req->param('lon');
+    return $c->create_response(200, [], [$data]);
+};
+
 __PACKAGE__->to_app(handle_static => 1);
 
 
