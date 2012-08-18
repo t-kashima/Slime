@@ -5,20 +5,21 @@ use base 'Test::Class';
 use Test::More;
 use Model;
 use Data::Dumper;
+use YAML::XS;
 
-my $DB_HOST     = 'ds037087.mongolab.com';
-my $DB_USERNAME = 'mongo';
-my $DB_PASSWORD = 'mongo0819';
-my $DB_NAME     = 'slime_geo_user';
-my $DB_PORT     = 37087;
+my $file_config = 'config.yaml';
+my $config = YAML::XS::LoadFile($file_config);
 
 sub startup : Test(startup => 1) {
     use_ok 'Model';
 }
 
 sub find : Test(1) {
-    my $model = Model->new(host => $DB_HOST, port => $DB_PORT,
-                           username => $DB_USERNAME, password => $DB_PASSWORD, db_name => $DB_NAME);
+    my $model = Model->new(host => $config->{DB_HOST},
+                           port => $config->{DB_PORT},
+                           username => $config->{DB_USERNAME},
+                           password => $config->{DB_PASSWORD},
+                           db_name => $config->{DB_NAME});
     my @users = $model->find_users(123, 35.6131, 139.6637765)->all;
     ok $#users, 3;
 }
