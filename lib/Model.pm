@@ -16,37 +16,45 @@ sub new {
         password => $args{password},
         db_name  => $args{db_name},
         port     => $args{port}
+
     }, $class;
-    $self->{collection} = $self->setup;
+    $self->{database} = $self->setup_database;
     return $self;
 }
 
-sub setup {
+sub setup_database {
     my $self = shift;
     my $connection = MongoDB::Connection->new(host => $self->{host}, port => $self->{port},
                                               username => $self->{username}, password => $self->{password},
                                               db_name => $self->{db_name});
 
-    my $database = $connection->slime_geo_user;
-    return $database->history;
+    return $connection->slime_geo_user;
 }
 
 sub insert_geo {
     my $self = shift;
     my ($user_id, $lat, $lon) = @_;
-
-    return $self->{collection}->insert({user_id => int($user_id), lat => $lat * 1, lon => $lon * 1});
+    my $collection = $self->{database}->history;
+    return $collection->insert({user_id => int($user_id), lat => $lat * 1, lon => $lon * 1});
 }
 
-sub find_users {
+sub find_geo_users {
     my $self = shift;
     my ($user_id, $lat, $lon) = @_;
-    my $users = $self->{collection}->find({'$and' => [{user_id => {'$ne' => int($user_id)}},
-                                                      {'$or' => [{lat => {'$gte' => $lat - $ANGLE * 35,
-                                                                          '$lte' => $lat + $ANGLE * 35}},
-                                                                 {lon => {'$gte' => $lon - $ANGLE * 35,
-                                                                          '$lte' => $lon + $ANGLE * 35}}]}]});
+    my $collection = $self->{database}->history;
+    my $users = $collection->find({'$and' => [{user_id => {'$ne' => int($user_id)}},
+                                              {'$or' => [{lat => {'$gte' => $lat - $ANGLE * 35,
+                                                                  '$lte' => $lat + $ANGLE * 35}},
+                                                         {lon => {'$gte' => $lon - $ANGLE * 35,
+                                                                  '$lte' => $lon + $ANGLE * 35}}]}]});
     return $users;
+}
+
+sub find_one_history {
+    my $self = shift;
+    my $id = shift;
+    my $collection = $self->{database}->history;
+    return $collection->find_one({_id => $id});
 }
 
 1;
