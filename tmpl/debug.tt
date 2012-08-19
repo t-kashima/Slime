@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>SLIME</title>
+    </head>
+    <body>
 <title>デバッグ画面</title>
 
 <h1>ユーザ追加</h1>
@@ -43,6 +49,12 @@ Twitterアカウント:<input type='text' id='id' name='id'/>
 [% END %]
 </table>
 
+<ul id="location"></ul>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/geolocation.js"></script>
+    </body>
+</html>
 <!--
 <h2>ステータスのjson</h2>
 <pre>

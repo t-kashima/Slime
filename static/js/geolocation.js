@@ -1,14 +1,25 @@
+
+
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
         function (pos) {
             $.post('/user_geo',
                    {
                        lat: pos.coords.latitude,
-                       lon: pos.coords.longitude,
-                       user_id: 123
+                       lon: pos.coords.longitude
                    },
                    function(res) {
-                       alert(res);
+                       if (res['json'] === undefined) {
+                           alert(res);
+                       } else {
+                           for (var key in res['json']) {
+                               var table = document.querySelector('table');
+                               var user = res['json'][key];
+                               table.innerHTML += '<tr><td>' + user.user_name + '</td><td>' + user.class + '</td><td>' +
+                                   '<a href="/follow?id=' + user.user_name + '&class=' + user.class + '">touch</a></td>'
+                           }
+                       }
+
                    }
             );
             var location = '<li>latitude:' + pos.coords.latitude + '</li>';

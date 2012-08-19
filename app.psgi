@@ -8,6 +8,8 @@ use lib './lib';
 use Model;
 use Data::Dumper;
 
+__PACKAGE__->load_plugins(qw/Web::JSON/);
+
 get '/' => sub {
     my $c = shift;
     return $c->create_response(200, [], ['Hello, world']);
@@ -37,7 +39,7 @@ get '/debug' => sub {
     my $my_info = $model->check_user_exists($user_name);
 
     # システム全体のユーザ情報取得
-    my @users = $model->select_user_info();
+    # my @users = $model->select_user_info();
 
     my $class;
     if ($my_info != 0) {
@@ -48,7 +50,7 @@ get '/debug' => sub {
         id      => $user_name,
         class   => $class,
         my_info => $my_info,
-        users   => \@users,
+        # users   => \@users,
     });
 };
 
@@ -105,30 +107,31 @@ get '/follow' => sub {
     
 };
 
-get '/user' => sub {
-    my $c = shift;
-    return $c->render('geolocation.tt');
-};
-
 post '/user_geo' => sub {
     my $c = shift;
-    my $user_id = $c->req->param('user_id');
+    my $user_name = $c->session->get('user_name');
     my $lat = $c->req->param('lat');
     my $lon = $c->req->param('lon');
 
-    my $model = Model->new;
-
-    my $id = $model->history_insert(int($user_id), $lat, $lon);
-
-    # user_id is not mine, lat or lon within 1km;
-    my $users = $model->history_find_users(int($user_id), $lat, $lon);
-
-    my $users_id;
-    while (my $user = $users->next) {
-        $users_id .= $user->{user_id} . ', ';
+    if ($user_name eq '') {
+        return $c->create_response(200, [], ['You need login']);
     }
 
-    return $c->create_response(200, [], ['near user\'s id:' . $users_id]);
+    my $model = Model->new;
+    my $my_user = $model->check_user_exists($user_name);
+    my $user_id = $my_user->{_id};
+
+    $model->history_insert($user_id, $lat, $lon);
+
+    # user_id is not mine, lat or lon within 1km;
+    my $users = $model->history_find_users($my_user->{_id}, $lat, $lon);
+
+    my @display_users;
+    while (my $user = $users->next) {
+        my $user_info = $model->get_user_info($user->{user_id});
+        push (@display_users, {user_name => $user_info->{user_name}, class => $user_info->{class}});
+    }
+    return $c->render_json(+{json => \@display_users});
 };
 
 get '/login' => sub {

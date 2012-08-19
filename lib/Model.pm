@@ -38,14 +38,14 @@ sub history_insert {
     my $self = shift;
     my ($user_id, $lat, $lon) = @_;
     my $collection = $self->{database}->history;
-    return $collection->insert({user_id => int($user_id), lat => $lat * 1, lon => $lon * 1});
+    return $collection->insert({user_id => $user_id, lat => $lat * 1, lon => $lon * 1});
 }
 
 sub history_find_users {
     my $self = shift;
     my ($user_id, $lat, $lon) = @_;
     my $collection = $self->{database}->history;
-    my $users = $collection->find({'$and' => [{user_id => {'$ne' => int($user_id)}},
+    my $users = $collection->find({'$and' => [{user_id => {'$ne' => $user_id}},
                                               {'$or' => [{lat => {'$gte' => $lat - $RANGE,
                                                                   '$lte' => $lat + $RANGE}},
                                                          {lon => {'$gte' => $lon - $RANGE,
@@ -117,6 +117,17 @@ sub drop_class {
     my $collection = $self->{database}->user;
     if ($collection->update({user_name => $user_name}, {user_name => $user_name, class => ''})) {
         return 1;
+    }
+    return 0;
+}
+
+sub get_user_info {
+    my $self    = shift;
+    my $user_id = shift;
+    my $collection = $self->{database}->user;
+    # if (my $user = $self->{test}->{user}->find_one({id => $id})) {
+    if (my $user = $collection->find_one({_id => $user_id})) {
+        return $user;
     }
     return 0;
 }
