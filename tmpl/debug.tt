@@ -2,7 +2,7 @@
 <title>デバッグ画面</title>
 
 <h1>ユーザ追加</h1>
-<form action='/add_usr' method='get'>
+<form action='/add_user' method='get'>
 Twitterアカウント:<input type='text' id='id' name='id'/>
 
 </form>
@@ -19,24 +19,25 @@ Twitterアカウント:<input type='text' id='id' name='id'/>
 <h1>アカウント情報</h1>
 <ul>
 <li>Twitterアカウント: @[% id %]
-<li>所属クラス       : -
-<li>クラスメイト一覧 :
-  <ul>
-    <li>@test_usr1
-    <li>@test_usr2
-    <li>@test_usr3
-  </ul>
+<li>所属クラス       : [% class %]
+<!-- <li>クラスメイト一覧 : -->
+<!--   <ul> -->
+<!--     <li>@test_user1 -->
+<!--     <li>@test_user2 -->
+<!--     <li>@test_user3 -->
+<!--   </ul> -->
+<!-- </li> -->
 </ul>
-<a href='/drop'>クラスから抜ける</a>
+[% IF id %]<a href='/drop'>クラスから抜ける</a>[% END %]
 
 <h1>登録情報</h1>
 <table>
 <tr><th>id</th><th>class</th><th>-</th></tr>
 [% FOR u IN users%]
 <tr>
-  <th>[% u.id %]</th>
+  <th>[% u.user_name %]</th>
   <th>[% IF u.class %][% u.class %][% ELSE %]-[%END%]</th>
-  <th><a href="/follow?id=[% u.id %]&class=[% u.class %]">接触する</a></th>
+  <th><a href="/follow?id=[% u.user_name %]&class=[% u.class %]">接触する</a></th>
 </tr>
 
 [% END %]
@@ -57,7 +58,7 @@ asdgoqejrgoajer
 }  
 </pre>
 
-<h1>function get_near_usr()</h1>
+<h1>function get_near_user()</h1>
 <p>デバッグ用で近いユーザ取得, 本来はステータス取得時にクラスに入ったりする</p>
 <form action='/status' method='get'>
 lat:<input type='text' name='lat' id='lat' value='135'/>
